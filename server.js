@@ -365,7 +365,7 @@ app.get("/sse", (req, res) => {
   res.flushHeaders();
 
   // Send endpoint info
-  res.write(`data: ${JSON.stringify({ type: "endpoint", url: `${PUBLIC_BASE_URL}/sse/messages?sessionId=${sessionId}` })}\n\n`);
+      res.write(`event: endpoint\ndata: ${PUBLIC_BASE_URL}/sse/messages?sessionId=${sessionId}\n\n`);
   
   sseSessions.set(sessionId, { res, createdAt: nowMs() });
   console.log(`[SSE] Session ${sessionId} connected`);
@@ -391,7 +391,7 @@ app.post("/sse/messages", async (req, res) => {
   const response = await handleMcpRequest(req.body, token);
   
   // Send response via SSE
-  session.res.write(`data: ${JSON.stringify(response)}\n\n`);
+      session.res.write(`event: message\ndata: ${JSON.stringify(response)}\n\n`);
   
   return res.json({ ok: true });
 });
