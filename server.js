@@ -27,8 +27,8 @@ const N8N_API_KEY = process.env.N8N_API_KEY || "";
 const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || "https://bridge-genspark-production.up.railway.app";
 const UPSTREAM_TIMEOUT_MS = Number(process.env.UPSTREAM_TIMEOUT_MS || 8000);
 const TOOLS_LIST_TTL_MS = Number(process.env.TOOLS_LIST_TTL_MS || 60000);
-const SSE_KEEPALIVE_MS = Number(process.env.SSE_KEEPALIVE_MS || 15000);
-const SSE_TIMEOUT_MS = Number(process.env.SSE_TIMEOUT_MS || 7200000);
+const SSE_KEEPALIVE_MS = Number(process.env.SSE_KEEPALIVE_MS || 10000);
+const SSE_TIMEOUT_MS = Number(process.env.SSE_TIMEOUT_MS || 14400000);
 
 if (!BRIDGE_API_KEY) {
   console.error("BRIDGE_API_KEY not set");
@@ -369,7 +369,7 @@ app.get("/sse", (req, res) => {
   // Send endpoint info
       res.write(`event: endpoint\ndata: ${PUBLIC_BASE_URL}/sse/messages?sessionId=${sessionId}\n\n`);
 
-    // Set connection timeout to 2 hours
+    // Set connection timeout to 4 hours
   req.setTimeout(SSE_TIMEOUT_MS);
   sseSessions.set(sessionId, { res, createdAt: nowMs() });
   console.log(`[SSE] Session ${sessionId} connected`);
@@ -377,7 +377,7 @@ app.get("/sse", (req, res) => {
     // SSE keep-alive heartbeat to prevent connection timeout
   const keepAliveInterval = setInterval(() => {
     try {
-      res.write(': keep-alive\n\n');
+      res.write(': ping\n\n');
     } catch (e) {
       clearInterval(keepAliveInterval);
     }
